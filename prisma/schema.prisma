@@ -1,0 +1,123 @@
+// Prisma Schema for Portfolio Management System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SkillCategory {
+  FRONTEND
+  BACKEND
+  DATABASE
+  DEVOPS
+  MOBILE
+  DESIGN
+  OTHER
+}
+
+enum ProjectCategory {
+  WEB_APP
+  MOBILE_APP
+  FULL_STACK
+  API_SERVICE
+  UI_UX
+  OPEN_SOURCE
+  OTHER
+}
+
+model User {
+  id                  String               @id @default(uuid())
+  name                String
+  email               String               @unique
+  password            String
+  role                Role                 @default(USER)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  profile             Profile?
+  skills              Skill[]
+  projects            Project[]
+  passwordResetTokens PasswordResetToken[]
+
+  @@index([email])
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username    String?  @unique
+  bio         String?  @db.Text
+  avatarUrl   String?
+  title       String?  // e.g. "Senior Full Stack Engineer"
+  location    String?
+  phone       String?
+  resumeUrl   String?
+  githubUrl   String?
+  linkedinUrl String?
+  twitterUrl  String?
+  websiteUrl  String?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([username])
+}
+
+model Skill {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  category  SkillCategory @default(FRONTEND)
+  level     Int           @default(80) // 1 - 100 percentage
+  iconName  String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([category])
+}
+
+model Project {
+  id           String          @id @default(uuid())
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  description  String          @db.Text
+  content      String?         @db.Text
+  imageUrl     String?
+  githubUrl    String?
+  liveUrl      String?
+  category     ProjectCategory @default(FULL_STACK)
+  technologies String          @db.Text // JSON string array of techs
+  isFeatured   Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([category])
+  @@index([isFeatured])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
