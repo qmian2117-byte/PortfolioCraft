@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { profileSchema } from "@/lib/validations/profile";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const token = getAuthCookie();

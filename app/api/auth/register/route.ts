@@ -6,6 +6,8 @@ import { setAuthCookie } from "@/lib/auth/cookies";
 import { registerSchema } from "@/lib/validations/auth";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -18,7 +20,6 @@ export async function POST(req: NextRequest) {
 
     const { name, email, password } = validation.data;
 
-    // Check duplicate user
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
@@ -30,13 +31,12 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await hashPassword(password);
     const username = email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
 
-    // Create user with default profile
     const newUser = await prisma.user.create({
       data: {
         name,
         email: email.toLowerCase(),
         password: hashedPassword,
-        role: "USER",
+        role: "USER" as any,
         profile: {
           create: {
             username,

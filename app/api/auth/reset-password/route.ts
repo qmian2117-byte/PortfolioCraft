@@ -4,6 +4,8 @@ import { hashPassword } from "@/lib/auth/password";
 import { resetPasswordSchema } from "@/lib/validations/auth";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

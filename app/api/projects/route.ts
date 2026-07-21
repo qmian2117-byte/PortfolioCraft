@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { projectSchema } from "@/lib/validations/project";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const token = getAuthCookie();
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || "";
     const category = searchParams.get("category");
     const tech = searchParams.get("tech");
-    const sort = searchParams.get("sort") || "newest"; // 'newest' | 'oldest' | 'alpha'
+    const sort = searchParams.get("sort") || "newest";
 
     const whereClause: any = {
       userId: decoded.userId,
@@ -40,7 +42,6 @@ export async function GET(req: NextRequest) {
           : { createdAt: "desc" },
     });
 
-    // Parse technologies JSON string array & apply tech filter if present
     let formattedProjects = projects.map((p) => ({
       ...p,
       technologies: JSON.parse(p.technologies || "[]"),
@@ -75,7 +76,6 @@ export async function POST(req: NextRequest) {
       return createApiResponse(false, errorMsg, null, 400);
     }
 
-    // Duplicate title prevention
     const existing = await prisma.project.findFirst({
       where: {
         userId: decoded.userId,

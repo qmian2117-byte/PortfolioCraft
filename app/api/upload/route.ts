@@ -3,6 +3,8 @@ import { getAuthCookie } from "@/lib/auth/cookies";
 import { verifyJWT } from "@/lib/auth/jwt";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const ALLOWED_TYPES = [
   "image/jpeg",
   "image/png",
@@ -26,7 +28,6 @@ export async function POST(req: NextRequest) {
       return createApiResponse(false, "No image file uploaded", null, 400);
     }
 
-    // Type validation
     if (!ALLOWED_TYPES.includes(file.type)) {
       return createApiResponse(
         false,
@@ -36,7 +37,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Size validation
     if (file.size > MAX_SIZE_BYTES) {
       return createApiResponse(
         false,
@@ -46,7 +46,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert to Base64 data URI for instant responsive client preview & cloud fallback
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const base64Image = `data:${file.type};base64,${buffer.toString("base64")}`;

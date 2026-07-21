@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { skillSchema } from "@/lib/validations/skill";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const token = getAuthCookie();
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const category = searchParams.get("category");
-    const sortBy = searchParams.get("sortBy") || "level"; // 'level' | 'name'
+    const sortBy = searchParams.get("sortBy") || "level";
 
     const whereClause: any = {
       userId: decoded.userId,
@@ -53,7 +55,6 @@ export async function POST(req: NextRequest) {
       return createApiResponse(false, errorMsg, null, 400);
     }
 
-    // Check duplicate entry for same user
     const existing = await prisma.skill.findFirst({
       where: {
         userId: decoded.userId,

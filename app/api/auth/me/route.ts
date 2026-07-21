@@ -4,6 +4,8 @@ import { verifyJWT } from "@/lib/auth/jwt";
 import { prisma } from "@/lib/prisma";
 import { createApiResponse } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const token = getAuthCookie();

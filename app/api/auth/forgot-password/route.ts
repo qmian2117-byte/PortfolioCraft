@@ -4,6 +4,8 @@ import { forgotPasswordSchema } from "@/lib/validations/auth";
 import { createApiResponse } from "@/lib/utils";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -19,7 +21,6 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      // Return 200 to prevent email enumeration
       return createApiResponse(
         true,
         "If an account with that email exists, a password reset link has been generated",
@@ -28,7 +29,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate reset token
     const token = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
