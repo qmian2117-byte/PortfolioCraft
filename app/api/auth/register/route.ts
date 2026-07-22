@@ -73,6 +73,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     console.error("Register Error:", error);
-    return createApiResponse(false, "Internal Server Error during registration", null, 500);
+    const errorMessage = error?.message || "Internal Server Error during registration";
+    return createApiResponse(false, `Server error: ${errorMessage}`, null, 500);
   }
 }

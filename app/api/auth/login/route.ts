@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error: any) {
     console.error("Login Error:", error);
-    return createApiResponse(false, "Internal Server Error during login", null, 500);
+    const errorMessage = error?.message || "Internal Server Error during login";
+    return createApiResponse(false, `Server error: ${errorMessage}`, null, 500);
   }
 }
